@@ -59,3 +59,23 @@ getNewTemplate();
 
 const folderPath = path.basename(__dirname);
 mergeStyles(folderPath, 'styles', 'project-dist', 'style.css');
+
+async function copyAssets(from) {
+  const folderContents = await fs.promises.readdir(from, 'utf8');
+  const assPrDist = path.join(prDistPath, 'assets');
+  fs.promises.mkdir(assPrDist, { recursive: true });
+
+  for (const content of folderContents) {
+    if (!path.extname(content)) {
+      const from = path.join(assetsPath, content);
+      const to = path.join(assPrDist, content);
+
+      fs.promises.mkdir(to, { recursive: true });
+
+      copyDir(from, to);
+    }
+  }
+}
+
+const assetsPath = path.join(folderPath, 'assets');
+copyAssets(assetsPath);

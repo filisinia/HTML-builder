@@ -1,22 +1,20 @@
-const fs = require('node:fs/promises');
+const fs = require('node:fs');
 const path = require('node:path');
 
-function copyDir(folderPath, fromName, toName) {
-  const from = path.join(folderPath, fromName);
-  const to = path.join(folderPath, toName);
+function copyDir(from, to) {
+  fs.promises.mkdir(to, { recursive: true });
 
-  fs.mkdir(to, { recursive: true });
-
-  fs.readdir(from, { withFileTypes: true }).then((files) => {
+  fs.promises.readdir(from, { withFileTypes: true }).then((files) => {
     for (const file of files) {
       const filePath = path.join(from, file.name);
       const newFilePath = path.join(to, file.name);
-      fs.copyFile(filePath, newFilePath);
+      fs.promises.copyFile(filePath, newFilePath);
     }
   });
 }
 
-const folderPath = path.basename(__dirname);
-copyDir(folderPath, 'files', 'files-copy');
+const from = path.join(path.basename(__dirname), 'files');
+const to = path.join(path.basename(__dirname), 'files-copy');
+copyDir(from, to);
 
 module.exports.copyDir = copyDir;
