@@ -1,8 +1,19 @@
 const fs = require('node:fs');
 const path = require('node:path');
 
-function copyDir(from, to) {
+async function copyDir(from, to) {
   fs.promises.mkdir(to, { recursive: true });
+
+  const oldFiles = await fs.promises.readdir(to);
+
+  if (oldFiles.length !== 0) {
+    for (const oldFile of oldFiles) {
+      const oldFilePath = path.join(to, oldFile);
+      fs.promises.unlink(oldFilePath, (err) => {
+        if (err) return err;
+      });
+    }
+  }
 
   fs.promises.readdir(from, { withFileTypes: true }).then((files) => {
     for (const file of files) {
